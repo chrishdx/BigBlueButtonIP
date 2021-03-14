@@ -18,8 +18,10 @@ aktuelleLAN = ni.ifaddresses('ens160')[ni.AF_INET][0]['addr']
 
 aktuellewan = requests.get('http://ipinfo.io/json').json()['ip']
 gespeichertewan = data["freeswitch"]["ip"]
+
 print 'Sys-LAN-IP : ' + aktuelleLAN
 print 'BBB-LAN-IP : ' + gespeicherteLAN
+
 def bearbeiten(lokaleip, wanip, datei):
 
         fin = open(datei, "rt")
