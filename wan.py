@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import netifaces as ni
-import netifaces as ni2
 import os
 import time
 import yaml
