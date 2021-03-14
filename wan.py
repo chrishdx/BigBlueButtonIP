@@ -7,21 +7,20 @@ import time
 import yaml
 import requests
 
-ni.ifaddresses('ens160:1')
-ni2.ifaddresses('ens160')
+ni.ifaddresses('ens160')
 
 
 file_name = '/usr/local/bigbluebutton/bbb-webrtc-sfu/config/default.yml'
 with open(file_name, 'r') as f:
-    data = yaml.load(f)
+    data = yaml.safe_load(f)
 
 gespeicherteLAN = data["localIpAddress"]
 aktuelleLAN = ni.ifaddresses('ens160')[ni.AF_INET][0]['addr']
 
-lokal = ni.ifaddresses('ens160:1')[ni.AF_INET][0]['addr']
-wan = requests.get('http://ipinfo.io/json').json()['ip']
-
-
+aktuellewan = requests.get('http://ipinfo.io/json').json()['ip']
+gespeichertewan = data["freeswitch"]["ip"]
+print 'Sys-LAN-IP : ' + aktuelleLAN
+print 'BBB-LAN-IP : ' + gespeicherteLAN
 def bearbeiten(lokaleip, wanip, datei):
 
         fin = open(datei, "rt")
@@ -51,20 +50,22 @@ if aktuelleLAN != gespeicherteLAN:
         os.system('bbb-conf --clean')
 else:
         print time.strftime("%d.%m.%Y %H:%M:%S") + ' keine Aenderungen erfoderlich'
-
-
-if lokal != wan:
-        bearbeiten(lokal,wan,"/etc/network/interfaces")
-        bearbeiten(lokal,wan,"/opt/freeswitch/etc/freeswitch/vars.xml")
-        bearbeiten(lokal,wan,"/opt/freeswitch/etc/freeswitch/sip_profiles/external.xml")
-        bearbeiten(lokal,wan,"/etc/bigbluebutton/nginx/sip.nginx")
-        bearbeiten(lokal,wan,"/usr/local/bigbluebutton/bbb-webrtc-sfu/config/default.yml")
-        bearbeiten(lokal,wan,"/etc/kurento/modules/kurento/WebRtcEndpoint.conf.ini")
-        bearbeiten(lokal,wan,"/lib/systemd/system/dummy-nic.service")
+print
+print 'Sys-WAN-IP : ' + aktuellewan
+print 'BBB-WAN-IP : ' + gespeichertewan
+if gespeichertewan != aktuellewan:
+        bearbeiten(gespeichertewan,aktuellewan,"/etc/network/interfaces")
+        bearbeiten(gespeichertewan,aktuellewan,"/opt/freeswitch/etc/freeswitch/vars.xml")
+        bearbeiten(gespeichertewan,aktuellewan,"/opt/freeswitch/etc/freeswitch/sip_profiles/external.xml")
+        bearbeiten(gespeichertewan,aktuellewan,"/etc/bigbluebutton/nginx/sip.nginx")
+        bearbeiten(gespeichertewan,aktuellewan,"/usr/local/bigbluebutton/bbb-webrtc-sfu/config/default.yml")
+        bearbeiten(gespeichertewan,aktuellewan,"/etc/kurento/modules/kurento/WebRtcEndpoint.conf.ini")
+        bearbeiten(gespeichertewan,aktuellewan,"/lib/systemd/system/dummy-nic.service")
         print time.strftime("%d.%m.%Y %H:%M:%S") + 'IP Adressen wurden geeandert'
-        os.system("/sbin/ip addr del " + lokal + " dev lo")
-        os.system("/sbin/ip addr add " + wan + " dev lo")
+        os.system("/sbin/ip addr del " + aktuellewan + " dev lo")
+        os.system("/sbin/ip addr add " + gespeichertewan + " dev lo")
         os.system("service networking restart")
         os.system('bbb-conf --clean')
 else:
         print time.strftime("%d.%m.%Y %H:%M:%S") + ' keine Aenderungen erfoderlich'
+
