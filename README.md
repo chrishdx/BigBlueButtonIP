@@ -5,7 +5,7 @@
 
 
 sudo apt-get update  <br /> 
-sudo apt install python-pip  <br />
+sudo apt install python-pip -y <br />
 pip install requests PyYAML netifaces  <br />
 git clone https://github.com/chrishdx/BigBlueButtonIP.git
 
